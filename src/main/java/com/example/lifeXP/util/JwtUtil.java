@@ -3,18 +3,25 @@ package com.example.lifeXP.util;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+
 
 @Component
 public class JwtUtil {
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long expirationTime = 1000*60*60*24;
+    
+    private String secret;
 
+    private final Key secretKey;
+    private final long expirationTime = 1000*60*60*24;
+    
+    public JwtUtil(@Value("${jwt.secret}")String secret){
+       this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
     public  String generateToken(String username){
         return Jwts.builder()
                 .setSubject(username)
